@@ -12,7 +12,7 @@ import Foundation
 // allows external data (JSON) to be converted to Swift struct
 // but for this to work, the fields MUST be named the same
 // exception being snake_case -> camelCase for field names
-struct Followers: Codable{
+struct Followers: Codable, Hashable{
     var login: String
     var avatarUrl: String 
 }
