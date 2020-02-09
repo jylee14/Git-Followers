@@ -23,6 +23,25 @@ class GFAvatarView: UIImageView {
         translatesAutoresizingMaskIntoConstraints = false
     }
     
+    func downloadImage(from url: String){
+        guard let url = URL(string: url) else { return }
+        
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self else { return }
+            
+            if let _ = error { return }
+            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else { return }
+            guard let data = data else { return }
+            guard let image = UIImage(data: data) else { return }
+            
+            DispatchQueue.main.async {
+                self.image = image
+            }
+        }
+        
+        task.resume()
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

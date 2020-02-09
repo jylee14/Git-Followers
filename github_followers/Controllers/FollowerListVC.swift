@@ -37,26 +37,11 @@ class FollowerListVC: UIViewController {
     }
     
     func configureCollectionView(){
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createFlowLayout())
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createFlowLayout(in: view))
         
         view.addSubview(collectionView)
         collectionView.backgroundColor = .systemBackground
         collectionView.register(FollowerCell.self, forCellWithReuseIdentifier: FollowerCell.reuseId)
-    }
-    
-    func createFlowLayout(columns: CGFloat = 3) -> UICollectionViewFlowLayout{
-        let width = view.bounds.width //total width of the device screen
-        let padding: CGFloat = 12
-        let minItemSpace: CGFloat = 10
-        let availableWidth = width - (2 * padding) - ((columns - 1) * minItemSpace)
-        let cellWidth = availableWidth / columns
-        
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
-        layout.itemSize = CGSize(width: cellWidth, height: cellWidth + 35) // to account for the GFLabel under the avatar
-        
-        return layout
     }
     
     func configureDataSource(){
@@ -78,7 +63,9 @@ class FollowerListVC: UIViewController {
     }
     
     func getFollowers(){
-        NetworkManager.shared.getFollowers(of: username, page: 1) { result in
+        NetworkManager.shared.getFollowers(of: username, page: 1) { [weak self] result in
+            guard let self = self else { return }
+            
             switch result{
             case .success(let followers):
                 self.updateData(followers: followers)

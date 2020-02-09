@@ -28,6 +28,7 @@ class FollowerCell: UICollectionViewCell {
     /// for setting values of individual cells (pass in follower object, and init each cell to have specific values)
     func set(follower: Followers){
         userNameLabel.text = follower.login
+        avatarImageView.downloadImage(from: follower.avatarUrl)
     }
     
     private func configure(){
