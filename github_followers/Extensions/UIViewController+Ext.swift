@@ -21,6 +21,12 @@ extension UIViewController{
         }
     }
     
+    func showEmptyScreen(withMessage message: String, in view: UIView){
+        let emptyScreen = GFEmptyStateView(message: message)
+        emptyScreen.frame = view.bounds
+        view.addSubview(emptyScreen)
+    }
+    
     func showLoadingScreen(){
         containerView = UIView(frame: view.bounds)
         view.addSubview(containerView)
