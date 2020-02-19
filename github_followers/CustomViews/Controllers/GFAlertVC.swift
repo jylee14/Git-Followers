@@ -26,6 +26,8 @@ class GFAlertVC: UIViewController {
         
         view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
         configureContainerView()
+        
+        // ordered title - button - body so that body can fill in the remaining view (top/bot anchor to title/button)
         configureTitleLabel()
         configureButton()
         configureBodyLabel()

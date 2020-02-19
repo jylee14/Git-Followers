@@ -40,10 +40,10 @@ class GFEmptyStateView: UIView {
             messageLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -40),
             
             
-            logoImageView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.9), //make the image's width = 1.3x screen width
-            logoImageView.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.9),
+            logoImageView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1.0), //make the image's width = 1.3x screen width
+            logoImageView.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.8),
             logoImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 150),
-            logoImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 180)
+            logoImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 160)
         ])
     }
     

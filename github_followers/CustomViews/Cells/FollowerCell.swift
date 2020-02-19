@@ -25,7 +25,7 @@ class FollowerCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// for setting values of individual cells (pass in follower object, and init each cell to have specific values)
+    // for setting values of individual cells (pass in follower object, and init each cell to have specific values)
     func set(follower: Followers){
         userNameLabel.text = follower.login
         avatarImageView.downloadImage(from: follower.avatarUrl)

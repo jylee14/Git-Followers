@@ -30,12 +30,12 @@ class SearchVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool){
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: true) //dont show the name of this view
     }
     
     func dismissKeyboardOnTap(){
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
-        view.addGestureRecognizer(tapGestureRecognizer)
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing)) //stop editing if user taps out of kb
+        view.addGestureRecognizer(tapGestureRecognizer) // register tap gesture to this view
     }
     
     @objc func pushFollowerListVC(){
@@ -44,10 +44,10 @@ class SearchVC: UIViewController {
             return
         }
         
-        let followerListVC = FollowerListVC()
-        followerListVC.username = userNameText.text
-        followerListVC.title = userNameText.text
-        navigationController?.pushViewController(followerListVC, animated: true)
+        let followerListVC = FollowerListVC() // initialize the followersVC to show
+        followerListVC.username = userNameText.text // set up the data necessary
+        followerListVC.title = userNameText.text    // set up the title using input
+        navigationController?.pushViewController(followerListVC, animated: true)    // present VC to the user 
     }
     
     func configureLogoImageView(){
@@ -94,6 +94,7 @@ class SearchVC: UIViewController {
 }
 
 extension SearchVC: UITextFieldDelegate{
+    // what should happen when user taps "Go/Return/Enter" on their keyboard?
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         pushFollowerListVC()
         
