@@ -8,6 +8,11 @@
 
 import UIKit
 
+protocol UserInfoVcDelegate: class{
+    func didTapGithubRepoButton(for user: User)
+    func didTapGetFollowers(for user: User)
+}
+
 class UserInfoVC: UIViewController {
     var userName: String!
     
@@ -17,6 +22,8 @@ class UserInfoVC: UIViewController {
     let itemView1 = UIView()
     let itemView2 = UIView()
     let dateLabel = GFBodyLabel(textAlignment: .center)
+    
+    weak var delegate: FollowerListVCDelegate!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,23 +49,31 @@ class UserInfoVC: UIViewController {
             case .failure(let error):
                 self.presentGFAlertOnMainThread(title: "Error", message: error.rawValue, buttonTitle: "Dismiss")
             case .success(let user):
-                DispatchQueue.main.async {
-                    self.add(childVC: GFUserInfoHeaderVC(user: user), to: self.headerView)
-                    self.add(childVC: GFRepoItemVC(user: user), to: self.itemView1)
-                    self.add(childVC: GFFollowersItemVC(user:user), to:self.itemView2)
-                    
-                    let userSince = user.createdAt.parseUtcDateString()?.fromUtcDateToMonYear() ?? "forever :)"
-                    self.dateLabel.text = "Github user since: \(userSince)"
-                }
+                DispatchQueue.main.async { self.configureUI(with: user)}
             }
         }
+    }
+    
+    private func configureUI(with user: User){
+        let repoVc = GFRepoItemVC(user: user)
+        repoVc.delegate = self
+        
+        let followerVc = GFFollowersItemVC(user: user)
+        followerVc.delegate = self
+        
+        add(childVC: GFUserInfoHeaderVC(user: user), to: headerView)
+        add(childVC: repoVc, to: itemView1)
+        add(childVC: followerVc, to: itemView2)
+        
+        let userSince = user.createdAt.parseUtcDateString()?.fromUtcDateToMonYear() ?? "forever :)"
+        dateLabel.text = "Github user since: \(userSince)"
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
     
-    func layoutUI(_ children: [UIView]){
+    private func layoutUI(_ children: [UIView]){
         let padding: CGFloat = 20
         
         for idx in 0 ..< children.count{
@@ -81,14 +96,35 @@ class UserInfoVC: UIViewController {
         ])
     }
     
-    func add(childVC: UIViewController, to containerView: UIView){
+    private func add(childVC: UIViewController, to containerView: UIView){
         addChild(childVC)
         containerView.addSubview(childVC.view)
         childVC.view.frame = containerView.bounds
         childVC.didMove(toParent: self)
     }
     
-    @objc func dismissVC(){
+    @objc private func dismissVC(){
         dismiss(animated: true)
+    }
+}
+
+extension UserInfoVC: UserInfoVcDelegate{
+    func didTapGithubRepoButton(for user: User){
+        // show safari page that goes to "https://github.com/\(username)"
+        guard let url = URL(string: user.htmlUrl) else {
+            presentGFAlertOnMainThread(title: "Uh-oh", message: "Couldn't open github page for this user", buttonTitle: "Dismiss")
+            return
+        }
+        presentSafariVC(with: url)
+    }
+    
+    func didTapGetFollowers(for user: User) {
+        // dismiss current userInfoVC and reload followersListVC with a new network call
+        guard user.followers != 0 else {
+            presentGFAlertOnMainThread(title: "Uh-oh", message: "This user has no followers!", buttonTitle: "Dismiss")
+            return
+        }
+        delegate.didRequestFollowers(for: user.login)
+        dismissVC()
     }
 }

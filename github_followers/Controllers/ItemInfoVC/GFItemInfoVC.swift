@@ -14,11 +14,14 @@ class GFItemInfoVC: UIViewController {
     let itemInfoRight   = GFItemInfoView(frame: .zero)
     let actionButton    = GFButton()
     
+    weak var delegate: UserInfoVcDelegate!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureContainerCard()
         configureContainer()
         layoutUI()
+        configureActionButton()
     }
 
     private func configureContainerCard(){
@@ -31,6 +34,14 @@ class GFItemInfoVC: UIViewController {
         itemContainer.addArrangedSubview(itemInfoRight)
         itemContainer.axis = .horizontal
         itemContainer.distribution = .fillEqually
+    }
+    
+    private func configureActionButton(){
+        actionButton.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func actionButtonTapped(){
+        
     }
     
     private func layoutUI(){

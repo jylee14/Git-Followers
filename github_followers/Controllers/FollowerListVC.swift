@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol FollowerListVCDelegate: class{
+    func didRequestFollowers(for username: String)
+}
+
 class FollowerListVC: UIViewController {
     enum Section{
         case main
@@ -133,6 +137,7 @@ extension FollowerListVC: UICollectionViewDelegate{
         let selectedFollower = activeFollowersList[indexPath.item]
         
         let destVC = UserInfoVC()
+        destVC.delegate = self
         destVC.userName = selectedFollower.login
         let navController = UINavigationController(rootViewController: destVC)
         present(navController, animated: true)
@@ -153,5 +158,20 @@ extension FollowerListVC: UISearchResultsUpdating, UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         updateData(using: followers)
         isSearching = false
+    }
+}
+
+extension FollowerListVC: FollowerListVCDelegate{
+    func didRequestFollowers(for username: String) {
+        self.username = username
+        title = username
+        
+        page = 1
+        followers.removeAll()
+        filteredFollowers.removeAll()
+        collectionView.setContentOffset(CGPoint(x: 0, y: -125), animated: true) // its a little bootleg but it solves the case where user has too few followers, causing screen to cut off the top of the squares  (for now)
+        
+        navigationController?.setNavigationBarHidden(false, animated: true) // show the "Followers" title
+        getFollowers(of: username, page: page)
     }
 }
