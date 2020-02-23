@@ -19,6 +19,7 @@ class GFFollowersItemVC: GFItemInfoVC{
     init(user: User){
         super.init(nibName: nil, bundle: nil)
         self.user = user
+        configureItems()
     }
     
     required init?(coder: NSCoder) {
@@ -26,8 +27,8 @@ class GFFollowersItemVC: GFItemInfoVC{
     }
     
     private func configureItems(){
-        itemInfoLeft.set(.repos, withCount: user.followers)
-        itemInfoRight.set(.gists, withCount: user.following)
+        itemInfoLeft.set(.followers, withCount: user.followers)
+        itemInfoRight.set(.following, withCount: user.following)
         
         actionButton.set(backgroundColor: .systemGreen, title: "Get Followers")
     }

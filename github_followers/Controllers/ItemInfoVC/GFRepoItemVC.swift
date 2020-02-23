@@ -19,6 +19,7 @@ class GFRepoItemVC: GFItemInfoVC{
     init(user: User){
         super.init(nibName: nil, bundle: nil)
         self.user = user
+        configureItems()
     }
     
     required init?(coder: NSCoder) {

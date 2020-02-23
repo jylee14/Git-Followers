@@ -16,14 +16,15 @@ class UserInfoVC: UIViewController {
     let headerView = UIView()
     let itemView1 = UIView()
     let itemView2 = UIView()
+    let dateLabel = GFBodyLabel(textAlignment: .center)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         configure()
         getUserInfo()
         
-        let childViews = [headerView, itemView1, itemView2]
+        let childViews = [headerView, itemView1, itemView2, dateLabel]
         layoutUI(childViews)
     }
     
@@ -43,6 +44,11 @@ class UserInfoVC: UIViewController {
             case .success(let user):
                 DispatchQueue.main.async {
                     self.add(childVC: GFUserInfoHeaderVC(user: user), to: self.headerView)
+                    self.add(childVC: GFRepoItemVC(user: user), to: self.itemView1)
+                    self.add(childVC: GFFollowersItemVC(user:user), to:self.itemView2)
+                    
+                    let userSince = user.createdAt.parseUtcDateString()?.fromUtcDateToMonYear() ?? "forever :)"
+                    self.dateLabel.text = "Github user since: \(userSince)"
                 }
             }
         }
@@ -70,11 +76,9 @@ class UserInfoVC: UIViewController {
         NSLayoutConstraint.activate([
             headerView.heightAnchor.constraint(equalToConstant: 180),
             itemView1.heightAnchor.constraint(equalToConstant: 140),
-            itemView2.heightAnchor.constraint(equalToConstant: 140)
+            itemView2.heightAnchor.constraint(equalToConstant: 140),
+            dateLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
-        
-        itemView1.backgroundColor = .systemPink
-        itemView2.backgroundColor = .systemBlue
     }
     
     func add(childVC: UIViewController, to containerView: UIView){

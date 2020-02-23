@@ -9,17 +9,16 @@
 import UIKit
 
 class GFItemInfoVC: UIViewController {
-    var itemContainer: UIStackView!
-    
-    let itemInfoLeft    = GFItemInfoView()
-    let itemInfoRight   = GFItemInfoView()
+    let itemContainer   = UIStackView()
+    let itemInfoLeft    = GFItemInfoView(frame: .zero)
+    let itemInfoRight   = GFItemInfoView(frame: .zero)
     let actionButton    = GFButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureContainerCard()
-        layoutUI()
         configureContainer()
+        layoutUI()
     }
 
     private func configureContainerCard(){
@@ -28,8 +27,9 @@ class GFItemInfoVC: UIViewController {
     }
     
     private func configureContainer(){
-        itemContainer           = UIStackView(arrangedSubviews: [itemInfoLeft, itemInfoRight])
-        itemContainer.axis      = .horizontal
+        itemContainer.addArrangedSubview(itemInfoLeft)
+        itemContainer.addArrangedSubview(itemInfoRight)
+        itemContainer.axis = .horizontal
         itemContainer.distribution = .fillEqually
     }
     
