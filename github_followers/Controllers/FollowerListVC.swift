@@ -41,14 +41,41 @@ class FollowerListVC: UIViewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: true) // show the "Followers" title
+        
+        let addToFavoritesButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addToFavorites))
+        addToFavoritesButton.tintColor = .systemGreen
+        navigationItem.rightBarButtonItem = addToFavoritesButton
     }
     
-    func configureViewController(){
+    @objc private func addToFavorites(){
+        showLoadingScreen()
+        NetworkManager.shared.getSingleUserInfo(username){ [weak self] result in
+            guard let self = self else { return }
+            self.dismissLoadingScreen()
+            switch result{
+            case .success(let user):
+                let follower = Followers(login: user.login, avatarUrl: user.avatarUrl)
+                PersistenceManager.updateFavoritesListWith(follower, method: .add){ [weak self] error in
+                    guard let self = self else { return }
+                    guard let error = error else {
+                        self.presentGFAlertOnMainThread(title: "Success", message: "Added user to favorites!", buttonTitle: "Nice")
+                        return
+                    }
+                    
+                    self.presentGFAlertOnMainThread(title: "Uh-Oh", message: error.rawValue, buttonTitle: "OK")
+                }
+            case .failure(let error):
+                self.presentGFAlertOnMainThread(title: "Uh-Oh", message: error.rawValue, buttonTitle: "OK")
+            }
+        }
+    }
+    
+    private func configureViewController(){
         view.backgroundColor = .systemBackground // so that it conforms to light/dark mode
         navigationController?.navigationBar.prefersLargeTitles = true // page title in bold
     }
     
-    func configureCollectionView(){
+    private func configureCollectionView(){
         // initialize the collectionView that will be used throughout this VC
         // set its frame (smallest enclosing rectangle) to be the view's bound (the portion of screen that the VC occupies)
         // and use flow layout
@@ -61,14 +88,14 @@ class FollowerListVC: UIViewController {
         collectionView.delegate = self
     }
     
-    func configureDataSource(){
+    private func configureDataSource(){
         // initialize diffable data source
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView){ collectionView, indexPath, follower in
             // grab a cell (which will be of type FollowerCell.self, having reuseId of FollowerCell.reuseId)
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FollowerCell.reuseId, for: indexPath) as! FollowerCell
             cell.set(follower: follower) // initialize the data inside this cell
             
-            return  cell
+            return cell
         }
     }
     
@@ -81,7 +108,7 @@ class FollowerListVC: UIViewController {
         searchController.searchBar.placeholder = "Follower Name"
     }
     
-    func updateData(using followers: [Followers]){
+    private func updateData(using followers: [Followers]){
         var snapshot = NSDiffableDataSourceSnapshot<Section, Followers>()
         snapshot.appendSections([.main])    // using section(s)
         snapshot.appendItems(followers)     // append these items
@@ -90,7 +117,7 @@ class FollowerListVC: UIViewController {
         }
     }
     
-    func getFollowers(of username: String, page: Int){
+    private func getFollowers(of username: String, page: Int){
         showLoadingScreen() //show this on main before entering bg thread
         NetworkManager.shared.getFollowers(of: username, page: page) { [weak self] result in
             guard let self = self else { return }
